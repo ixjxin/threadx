@@ -1,13 +1,12 @@
-/**************************************************************************/
-/*                                                                        */
-/*       Copyright (c) Microsoft Corporation. All rights reserved.        */
-/*                                                                        */
-/*       This software is licensed under the Microsoft Software License   */
-/*       Terms for Microsoft Azure RTOS. Full text of the license can be  */
-/*       found in the LICENSE file at https://aka.ms/AzureRTOS_EULA       */
-/*       and in the root directory of this software.                      */
-/*                                                                        */
-/**************************************************************************/
+/***************************************************************************
+ * Copyright (c) 2024 Microsoft Corporation 
+ * 
+ * This program and the accompanying materials are made available under the
+ * terms of the MIT License which is available at
+ * https://opensource.org/licenses/MIT.
+ * 
+ * SPDX-License-Identifier: MIT
+ **************************************************************************/
 
 
 /**************************************************************************/
@@ -20,15 +19,17 @@
 /**************************************************************************/
 /**************************************************************************/
 
+    .syntax unified
+#if defined(THUMB_MODE)
+    .thumb
+#else
+    .arm
+#endif
+
 IRQ_DISABLE     =       0x80                    // IRQ disable bit
 MODE_MASK       =       0x1F                    // Mode mask
 SYS_MODE_BITS   =       0x1F                    // System mode bits
 
-
-/* No 16-bit Thumb mode veneer code is needed for _tx_thread_irq_nesting_start
-   since it will never be called 16-bit mode.  */
-
-    .arm
     .text
     .align 2
 /**************************************************************************/
@@ -36,7 +37,7 @@ SYS_MODE_BITS   =       0x1F                    // System mode bits
 /*  FUNCTION                                               RELEASE        */
 /*                                                                        */
 /*    _tx_thread_irq_nesting_start                         ARMv7-A        */
-/*                                                           6.1.11       */
+/*                                                           6.3.0        */
 /*  AUTHOR                                                                */
 /*                                                                        */
 /*    William E. Lamie, Microsoft Corporation                             */
@@ -75,8 +76,14 @@ SYS_MODE_BITS   =       0x1F                    // System mode bits
 /*  09-30-2020     William E. Lamie         Initial Version 6.1           */
 /*  04-25-2022     Zhen Kong                Updated comments,             */
 /*                                            resulting in version 6.1.11 */
+/*  10-31-2023     Yajun Xia                Updated comments,             */
+/*                                            Added thumb mode support,   */
+/*                                            resulting in version 6.3.0  */
 /*                                                                        */
 /**************************************************************************/
+#if defined(THUMB_MODE)
+    .thumb_func
+#endif
     .global  _tx_thread_irq_nesting_start
     .type    _tx_thread_irq_nesting_start,function
 _tx_thread_irq_nesting_start:
@@ -89,8 +96,4 @@ _tx_thread_irq_nesting_start:
                                                 //   and push r1 just to keep 8-byte alignment
     BIC     r0, r0, #IRQ_DISABLE                // Build enable IRQ CPSR
     MSR     CPSR_c, r0                          // Enter system mode
-#ifdef __THUMB_INTERWORK
     BX      r3                                  // Return to caller
-#else
-    MOV     pc, r3                              // Return to caller
-#endif
