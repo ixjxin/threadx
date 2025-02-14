@@ -1,13 +1,12 @@
-;/**************************************************************************/
-;/*                                                                        */
-;/*       Copyright (c) Microsoft Corporation. All rights reserved.        */
-;/*                                                                        */
-;/*       This software is licensed under the Microsoft Software License   */
-;/*       Terms for Microsoft Azure RTOS. Full text of the license can be  */
-;/*       found in the LICENSE file at https://aka.ms/AzureRTOS_EULA       */
-;/*       and in the root directory of this software.                      */
-;/*                                                                        */
-;/**************************************************************************/
+;/***************************************************************************
+; * Copyright (c) 2024 Microsoft Corporation 
+; * 
+; * This program and the accompanying materials are made available under the
+; * terms of the MIT License which is available at
+; * https://opensource.org/licenses/MIT.
+; * 
+; * SPDX-License-Identifier: MIT
+; **************************************************************************/
 ;
 ;
 ;/**************************************************************************/ 
@@ -35,7 +34,7 @@ CPSR_MASK       EQU     0x9F                    ; Mask initial CPSR, IRQ ints en
 ;/*  FUNCTION                                               RELEASE        */ 
 ;/*                                                                        */ 
 ;/*    _txm_module_manager_thread_stack_build          Cortex-A7/MMU/IAR   */ 
-;/*                                                           6.1          */
+;/*                                                           6.3.0        */
 ;/*  AUTHOR                                                                */
 ;/*                                                                        */
 ;/*    Scott Larson, Microsoft Corporation                                 */
@@ -68,13 +67,20 @@ CPSR_MASK       EQU     0x9F                    ; Mask initial CPSR, IRQ ints en
 ;/*    DATE              NAME                      DESCRIPTION             */
 ;/*                                                                        */
 ;/*  09-30-2020      Scott Larson            Initial Version 6.1           */
+;/*  10-31-2023      Yajun Xia               Modified comment(s),          */
+;/*                                            Added thumb mode support,   */
+;/*                                            resulting in version 6.3.0  */
 ;/*                                                                        */
 ;/**************************************************************************/
 ;VOID   _txm_module_manager_thread_stack_build(TX_THREAD *thread_ptr, VOID (*function_ptr)(TX_THREAD *, TXM_MODULE_INSTANCE *))
 ;{
     RSEG    .text:CODE:NOROOT(2)
     PUBLIC  _txm_module_manager_thread_stack_build
+#ifdef THUMB_MODE
+    THUMB
+#else
     ARM
+#endif
 _txm_module_manager_thread_stack_build
 ;
 ;
@@ -132,13 +138,15 @@ _txm_module_manager_thread_stack_build
     STR     r1, [r2, #64]                       ; Store initial pc
     STR     r3, [r2, #68]                       ; 0 for back-trace
     MRS     r3, CPSR                            ; Pickup CPSR
-    BIC     r3, r3, #CPSR_MASK                  ; Mask mode bits of CPSR
+    BIC     r3, #CPSR_MASK                      ; Mask mode bits of CPSR
     TST     r1, #1                              ; Test if THUMB bit set in initial PC
-    ORRNE   r3, r3, #THUMB_MASK                 ; Set T bit if set
+    IT      NE
+    ORRNE   r3, #THUMB_MASK                     ; Set T bit if set
     LDR     r1, [r0, #156]                      ; Load tx_thread_module_current_user_mode
     TST     r1, #1                              ; Test if the flag is set
-    ORREQ   r3, r3, #SYS_MODE                   ; Flag not set: Build CPSR, SYS mode, IRQ enabled
-    ORRNE   r3, r3, #USR_MODE                   ; Flag set: Build CPSR, USR mode, IRQ enabled
+    ITE     EQ
+    ORREQ   r3, #SYS_MODE                       ; Flag not set: Build CPSR, SYS mode, IRQ enabled
+    ORRNE   r3, #USR_MODE                       ; Flag set: Build CPSR, USR mode, IRQ enabled
     STR     r3, [r2, #4]                        ; Store initial CPSR
 ;
 ;    /* Setup stack pointer.  */
