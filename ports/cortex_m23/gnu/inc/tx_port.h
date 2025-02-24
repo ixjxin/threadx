@@ -1,13 +1,12 @@
-/**************************************************************************/
-/*                                                                        */
-/*       Copyright (c) Microsoft Corporation. All rights reserved.        */
-/*                                                                        */
-/*       This software is licensed under the Microsoft Software License   */
-/*       Terms for Microsoft Azure RTOS. Full text of the license can be  */
-/*       found in the LICENSE file at https://aka.ms/AzureRTOS_EULA       */
-/*       and in the root directory of this software.                      */
-/*                                                                        */
-/**************************************************************************/
+/***************************************************************************
+ * Copyright (c) 2024 Microsoft Corporation 
+ * 
+ * This program and the accompanying materials are made available under the
+ * terms of the MIT License which is available at
+ * https://opensource.org/licenses/MIT.
+ * 
+ * SPDX-License-Identifier: MIT
+ **************************************************************************/
 
 
 /**************************************************************************/
@@ -447,7 +446,7 @@ unsigned int interrupt_save;
 
 #ifdef TX_THREAD_INIT
 CHAR                            _tx_version_id[] = 
-                                    "Copyright (c) Microsoft Corporation. All rights reserved.  *  ThreadX Cortex-M23/GNU Version 6.2.1 *";
+                                    "Copyright (c) 2024 Microsoft Corporation.  *  ThreadX Cortex-M23/GNU Version 6.4.2 *";
 #else
 #ifdef TX_MISRA_ENABLE
 extern  CHAR                    _tx_version_id[100];

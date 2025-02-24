@@ -1,13 +1,12 @@
-/**************************************************************************/
-/*                                                                        */
-/*       Copyright (c) Microsoft Corporation. All rights reserved.        */
-/*                                                                        */
-/*       This software is licensed under the Microsoft Software License   */
-/*       Terms for Microsoft Azure RTOS. Full text of the license can be  */
-/*       found in the LICENSE file at https://aka.ms/AzureRTOS_EULA       */
-/*       and in the root directory of this software.                      */
-/*                                                                        */
-/**************************************************************************/
+/***************************************************************************
+ * Copyright (c) 2024 Microsoft Corporation 
+ * 
+ * This program and the accompanying materials are made available under the
+ * terms of the MIT License which is available at
+ * https://opensource.org/licenses/MIT.
+ * 
+ * SPDX-License-Identifier: MIT
+ **************************************************************************/
 
 
 /**************************************************************************/
@@ -515,7 +514,7 @@ THREAD_SMP_DECLARE ULONG    _tx_thread_smp_initial_fpu_control_register;
 
 #ifdef TX_THREAD_INIT
 CHAR                            _tx_version_id[] =
-                                    "Copyright (c) Microsoft Corporation. All rights reserved. * ThreadX SMP MIPS32_interAptiv/Green Hills Version 6.2.1 *";
+                                    "Copyright (c) 2024 Microsoft Corporation. * ThreadX SMP MIPS32_interAptiv/Green Hills Version 6.4.2 *";
 #else
 extern  CHAR                    _tx_version_id[];
 #endif
