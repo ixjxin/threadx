@@ -1,13 +1,12 @@
-;/**************************************************************************/
-;/*                                                                        */
-;/*       Copyright (c) Microsoft Corporation. All rights reserved.        */
-;/*                                                                        */
-;/*       This software is licensed under the Microsoft Software License   */
-;/*       Terms for Microsoft Azure RTOS. Full text of the license can be  */
-;/*       found in the LICENSE file at https://aka.ms/AzureRTOS_EULA       */
-;/*       and in the root directory of this software.                      */
-;/*                                                                        */
-;/**************************************************************************/
+;/***************************************************************************
+; * Copyright (c) 2024 Microsoft Corporation 
+; * 
+; * This program and the accompanying materials are made available under the
+; * terms of the MIT License which is available at
+; * https://opensource.org/licenses/MIT.
+; * 
+; * SPDX-License-Identifier: MIT
+; **************************************************************************/
 ;
 ;
 ;/**************************************************************************/
@@ -39,7 +38,7 @@
 ;/*  FUNCTION                                               RELEASE        */ 
 ;/*                                                                        */ 
 ;/*    _tx_timer_interrupt                                Cortex-A7/IAR    */ 
-;/*                                                           6.1          */
+;/*                                                           6.3.0        */
 ;/*  AUTHOR                                                                */
 ;/*                                                                        */
 ;/*    William E. Lamie, Microsoft Corporation                             */
@@ -74,13 +73,20 @@
 ;/*    DATE              NAME                      DESCRIPTION             */
 ;/*                                                                        */
 ;/*  09-30-2020     William E. Lamie         Initial Version 6.1           */
+;/*  10-31-2023     Yajun Xia                Modified comment(s),          */
+;/*                                            Added thumb mode support,   */
+;/*                                            resulting in version 6.3.0  */
 ;/*                                                                        */
 ;/**************************************************************************/
 ;VOID   _tx_timer_interrupt(VOID)
 ;{
     RSEG    .text:CODE:NOROOT(2)
     PUBLIC  _tx_timer_interrupt
+#ifdef THUMB_MODE
+    THUMB
+#else
     ARM
+#endif
 _tx_timer_interrupt
 ;
 ;    /* Upon entry to this routine, it is assumed that context save has already
@@ -193,7 +199,7 @@ __tx_timer_done
 __tx_something_expired
 ;
 ;
-    STMDB   sp!, {r0, lr}                       ; Save the lr register on the stack
+    PUSH    {r0, lr}                            ; Save the lr register on the stack
                                                 ;   and save r0 just to keep 8-byte alignment
 ;
 ;    /* Did a timer expire?  */
@@ -231,7 +237,7 @@ __tx_timer_dont_activate
 ;
 __tx_timer_not_ts_expiration
 ;
-    LDMIA   sp!, {r0, lr}                       ; Recover lr register (r0 is just there for
+    POP     {r0, lr}                            ; Recover lr register (r0 is just there for
                                                 ;   the 8-byte stack alignment
 ;
 ;    }
